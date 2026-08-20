@@ -18,6 +18,6 @@ const app = express()
 app.get('/',(req,res)=>res.send("Welcome " + usuario1 ))
 //const PORT = process.env.PORT || 3000;
 //app.listen(PORT, () => {
-  //console.log(`Local en http://localhost:${PORT}`);
+// /console.log(`Local en http://localhost:${PORT}`);
 //});
 export default app;
