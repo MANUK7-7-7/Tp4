@@ -14,10 +14,10 @@ console.log("usuario1:",usuario1)
 await client.end()
 
 const app = express()
-const port = 3000;
+//const port = 3000;
 app.get('/',(req,res)=>res.send("Welcome " + usuario1 ))
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Local en http://localhost:${PORT}`);
-});
+//const PORT = process.env.PORT || 3000;
+//app.listen(PORT, () => {
+  //console.log(`Local en http://localhost:${PORT}`);
+//});
 export default app;
