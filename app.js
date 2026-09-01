@@ -18,7 +18,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secreto123'
 app.post('/crearusuario', async (req, res) => {
     const user = req.body;
 
-    if (!user.userid || !user.email || !user.password) {
+    if (!user.email || !user.password) {
         return res.status(400).json({
             message: "Debe completar todos los campos"
         });
@@ -29,8 +29,8 @@ app.post('/crearusuario', async (req, res) => {
 
         user.password = hashedPassword;
         let result = await client.query(
-            "INSERT INTO usuario(id,email,password) VALUES ($1, $2, $3) RETURNING *",
-            [user.userid, user.email, user.password]
+            "INSERT INTO usuario(email,password) VALUES ($1, $2) RETURNING *",
+            [user.email, user.password]
         );
 
         console.log("Rows creadas:", result.rowCount);
