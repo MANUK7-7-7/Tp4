@@ -98,7 +98,7 @@ app.post('/login', async (req, res) => {
 app.post('/escucho', async (req, res) => {
     const token =
         req.headers.authorization?.replace('Bearer ', '') ||
-        req.body.token
+        req.body?.token
 
     try {
         const payload = jwt.verify(token, JWT_SECRET)
