@@ -1,11 +1,9 @@
-import bcrypt from 'bcrypt'
 import pool from './db.js'
 
-export async function crearUsuario(nombre, password) {
-  const hashedPwd = await bcrypt.hash(password, 10)
+export async function crearUsuario(nombre, hashedPassword) {
   const result = await pool.query(
     "insert into usuario(nombre, password) values ($1,$2) returning id, nombre, rol, fan",
-    [nombre, hashedPwd]
+    [nombre, hashedPassword]
   )
   return result.rows[0]
 }

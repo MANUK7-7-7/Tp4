@@ -10,7 +10,8 @@ export async function crearUsuario(req, res) {
     return res.status(400).json({message:"Debes completar todos los campos"})
 
   try {
-    const nuevoUsuario = await usuarioService.crearUsuario(user.nombre, user.password)
+    const hashedPwd = await bcrypt.hash(user.password, 10)
+    const nuevoUsuario = await usuarioService.crearUsuario(user.nombre, hashedPwd)
     console.log("usuario creado", nuevoUsuario)
     return res.status(201).json({message:"Usuario creado!", usuario: nuevoUsuario})
   }
