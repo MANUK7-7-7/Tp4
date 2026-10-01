@@ -24,10 +24,18 @@ export async function incrementarEscucha(usuarioId, cancionId) {
   return result.rows[0]
 }
 
-export async function contarCancionesEscuchadas(usuarioId) {
+export async function contarReproducciones(usuarioId) {
   const result = await pool.query(
-    "select count(*) from escucha where usuario_id = $1",
+    "select coalesce(sum(reproducciones), 0) as cantidad from escucha where usuario_id = $1",
     [usuarioId]
   )
-  return Number(result.rows[0].count)
+  return Number(result.rows[0].cantidad)
+}
+
+export async function listarEscuchasDeUsuario(usuarioId) {
+  const result = await pool.query(
+    "select c.id, c.nombre, e.reproducciones from escucha e inner join cancion c on e.cancion_id = c.id where e.usuario_id = $1",
+    [usuarioId]
+  )
+  return result.rows
 }

@@ -16,8 +16,9 @@ export async function crearCancion(req, res) {
 }
 
 export async function modificarCancion(req, res) {
-  const { id, nombre } = req.body
-  if (!id || !nombre)
+  const { id } = req.params
+  const { nombre } = req.body
+  if (!nombre)
     return res.status(400).json({message:"Debes completar todos los campos"})
 
   try {
@@ -34,9 +35,7 @@ export async function modificarCancion(req, res) {
 }
 
 export async function borrarCancion(req, res) {
-  const { id } = req.body
-  if (!id)
-    return res.status(400).json({message:"Debes completar todos los campos"})
+  const { id } = req.params
 
   try {
     const cancion = await cancionService.borrarCancion(id)
@@ -48,5 +47,32 @@ export async function borrarCancion(req, res) {
   catch (err) {
     console.log("Error:", err)
     return res.status(500).json({message:"Error borrando cancion en bd" + err})
+  }
+}
+
+export async function listarCanciones(req, res) {
+  try {
+    const canciones = await cancionService.listarCanciones()
+    return res.status(200).json({canciones})
+  }
+  catch (err) {
+    console.log("Error:", err)
+    return res.status(500).json({message:"Error leyendo canciones en bd" + err})
+  }
+}
+
+export async function buscarCancion(req, res) {
+  const { id } = req.params
+
+  try {
+    const cancion = await cancionService.buscarCancion(id)
+    if (!cancion)
+      return res.status(404).json({message:"Canción inexistente"})
+
+    return res.status(200).json({cancion})
+  }
+  catch (err) {
+    console.log("Error:", err)
+    return res.status(500).json({message:"Error leyendo cancion en bd" + err})
   }
 }

@@ -6,7 +6,7 @@ Cómo cargar cada endpoint en Insomnia: método, URL, headers y body.
 
 - **Base URL local:** `http://localhost:3000`
 - En todos los requests con body, el **Body** se carga como **JSON** (en Insomnia: `Body` → `JSON`). Eso ya manda el header `Content-Type: application/json`, no hace falta agregarlo a mano.
-- Los endpoints protegidos necesitan el header `Authorization` con el token que devuelve `/login`:
+- Los endpoints protegidos necesitan el header `Authorization` con el token que devuelve `/auth/login`:
 
   ```
   Authorization: Bearer <token>
@@ -18,12 +18,15 @@ Cómo cargar cada endpoint en Insomnia: método, URL, headers y body.
 
 | Método | Ruta | Auth | Rol requerido |
 |--------|------|------|---------------|
-| POST | `/crearusuario` | No | — |
-| POST | `/login` | No | — |
+| POST | `/auth/crearusuario` | No | — |
+| POST | `/auth/login` | No | — |
+| GET | `/cancion` | Sí | Cualquier usuario logueado |
+| GET | `/cancion/:id` | Sí | Cualquier usuario logueado |
 | POST | `/cancion` | Sí | Admin (`rol = 'A'`) |
-| PUT | `/cancion` | Sí | Admin (`rol = 'A'`) |
-| DELETE | `/cancion` | Sí | Admin (`rol = 'A'`) |
-| POST | `/escucho` | Sí | Cualquier usuario logueado |
+| PUT | `/cancion/:id` | Sí | Admin (`rol = 'A'`) |
+| DELETE | `/cancion/:id` | Sí | Admin (`rol = 'A'`) |
+| POST | `/cancion/escucho/:id` | Sí | Cualquier usuario logueado |
+| GET | `/cancion/escucho` | Sí | Cualquier usuario logueado |
 
 ---
 
@@ -32,7 +35,7 @@ Cómo cargar cada endpoint en Insomnia: método, URL, headers y body.
 Crea un usuario nuevo. La password se guarda hasheada con bcrypt. El usuario se crea con el `rol` por defecto de la base (no se puede elegir desde acá).
 
 - **Método:** `POST`
-- **URL:** `http://localhost:3000/crearusuario`
+- **URL:** `http://localhost:3000/auth/crearusuario`
 - **Headers:** ninguno extra (solo el `Content-Type: application/json` que pone Insomnia al elegir Body → JSON)
 - **Body (JSON):**
 
@@ -61,7 +64,7 @@ Crea un usuario nuevo. La password se guarda hasheada con bcrypt. El usuario se 
 Devuelve el JWT que hay que usar en el resto de los endpoints. El token dura **1 hora**.
 
 - **Método:** `POST`
-- **URL:** `http://localhost:3000/login`
+- **URL:** `http://localhost:3000/auth/login`
 - **Headers:** ninguno extra
 - **Body (JSON):**
 
@@ -121,10 +124,10 @@ Solo admin.
 
 ## 4. Modificar canción
 
-Solo admin. El `id` va **en el body**, no en la URL.
+Solo admin. El `id` va **en la URL** y en el body solo el `nombre` nuevo.
 
 - **Método:** `PUT`
-- **URL:** `http://localhost:3000/cancion`
+- **URL:** `http://localhost:3000/cancion/1`
 - **Headers:**
 
   ```
@@ -135,7 +138,6 @@ Solo admin. El `id` va **en el body**, no en la URL.
 
 ```json
 {
-  "id": 1,
   "nombre": "Bohemian Rhapsody (Remastered)"
 }
 ```
@@ -149,29 +151,23 @@ Solo admin. El `id` va **en el body**, no en la URL.
 }
 ```
 
-**Errores:** `400` si falta `id` o `nombre`; `401` sin token válido; `403` si no es admin; `404` si la canción no existe; `500` si falla la base.
+**Errores:** `400` si falta `nombre`; `401` sin token válido; `403` si no es admin; `404` si la canción no existe; `500` si falla la base.
 
 ---
 
 ## 5. Borrar canción
 
-Solo admin. El `id` también va **en el body** — en Insomnia un `DELETE` acepta body igual que un POST, se carga en la pestaña Body → JSON.
+Solo admin. El `id` va **en la URL**, no hace falta body.
 
 - **Método:** `DELETE`
-- **URL:** `http://localhost:3000/cancion`
+- **URL:** `http://localhost:3000/cancion/1`
 - **Headers:**
 
   ```
   Authorization: Bearer {{ token }}
   ```
 
-- **Body (JSON):**
-
-```json
-{
-  "id": 1
-}
-```
+- **Body:** ninguno
 
 **Respuesta 200:**
 
@@ -182,31 +178,25 @@ Solo admin. El `id` también va **en el body** — en Insomnia un `DELETE` acept
 }
 ```
 
-**Errores:** `400` si falta `id`; `401` sin token válido; `403` si no es admin; `404` si la canción no existe; `500` si falla la base.
+**Errores:** `401` sin token válido; `403` si no es admin; `404` si la canción no existe; `500` si falla la base.
 
 ---
 
 ## 6. Registrar escucha
 
-Registra que el usuario del token escuchó una canción. Si ya la había escuchado, suma una reproducción. El usuario se toma del token, así que **no se manda el id de usuario en el body**: el `id` del body es el de la **canción**.
+Registra que el usuario del token escuchó una canción. Si ya la había escuchado, suma una reproducción. El usuario se toma del token, y el `id` de la **canción** va en la URL. No hace falta body.
 
-Cuando el usuario supera las 10 canciones distintas escuchadas, queda marcado como `fan`.
+Cuando el usuario llega a 10 reproducciones en total (sumando todas sus canciones), queda marcado como `fan`.
 
 - **Método:** `POST`
-- **URL:** `http://localhost:3000/escucho`
+- **URL:** `http://localhost:3000/cancion/escucho/1`
 - **Headers:**
 
   ```
   Authorization: Bearer {{ token }}
   ```
 
-- **Body (JSON):**
-
-```json
-{
-  "id": 1
-}
-```
+- **Body:** ninguno
 
 **Respuesta 201:**
 
@@ -217,7 +207,42 @@ Cuando el usuario supera las 10 canciones distintas escuchadas, queda marcado co
 }
 ```
 
-**Errores:** `400` si falta `id`; `401` sin token válido; `500` si falla la base (por ejemplo, si la canción no existe y salta la foreign key).
+**Errores:** `401` sin token válido; `500` si falla la base (por ejemplo, si la canción no existe y salta la foreign key).
+
+---
+
+## 7. Listar canciones
+
+- **Método:** `GET`
+- **URL:** `http://localhost:3000/cancion`
+- **Headers:** `Authorization: Bearer {{ token }}`
+- **Body:** ninguno
+
+**Respuesta 200:** `{ "canciones": [ { "id": 1, "nombre": "..." } ] }`
+
+---
+
+## 8. Ver una canción
+
+- **Método:** `GET`
+- **URL:** `http://localhost:3000/cancion/1`
+- **Headers:** `Authorization: Bearer {{ token }}`
+- **Body:** ninguno
+
+**Respuesta 200:** `{ "cancion": { "id": 1, "nombre": "..." } }` — `404` si no existe.
+
+---
+
+## 9. Mis escuchas
+
+Lista las canciones que escuchó el usuario del token, con sus reproducciones.
+
+- **Método:** `GET`
+- **URL:** `http://localhost:3000/cancion/escucho`
+- **Headers:** `Authorization: Bearer {{ token }}`
+- **Body:** ninguno
+
+**Respuesta 200:** `{ "escuchas": [ { "id": 1, "nombre": "...", "reproducciones": 3 } ] }`
 
 ---
 
@@ -230,3 +255,5 @@ Cuando el usuario supera las 10 canciones distintas escuchadas, queda marcado co
 | `403` | El token es válido pero el usuario no es admin | `No tenés permisos de administrador` |
 
 El header tiene que tener el formato `Bearer <token>` — el middleware parte el string por el espacio y toma la segunda parte, así que si mandás el token pelado no funciona.
+
+Cualquier ruta que no exista devuelve `404` con `{ "Error": "unknown endpoint", ... }`.

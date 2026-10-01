@@ -23,3 +23,16 @@ export async function borrarCancion(id) {
   )
   return result.rows[0]
 }
+
+export async function listarCanciones() {
+  const result = await pool.query("select * from cancion")
+  return result.rows
+}
+
+export async function buscarCancion(id) {
+  const result = await pool.query(
+    "select * from cancion where id = $1",
+    [id]
+  )
+  return result.rows[0]
+}
