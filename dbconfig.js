@@ -1,13 +1,11 @@
 import 'dotenv/config'; // Carga automática en una sola línea
+import { Sequelize } from 'sequelize';
 
-const dbconfig = {
-    host: process.env.PGHOST,
-    database: process.env.PGDATABASE,
-    user:process.env.PGUSER,
-    password:process.env.PGPASSWORD,
-    port:5432,
-    ssl:true
+export const sequelize = new Sequelize(process.env.DATABASE_URL, { dialect: 'postgres'});
+try {
+  await sequelize.authenticate();
+  console.log('Conexión establecida con éxito.');
+} catch (error) {
+  console.error('No se pudo conectar a la base de datos:', error);
 }
-
-export default dbconfig; 
- 
+await sequelize.close();

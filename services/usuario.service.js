@@ -1,4 +1,4 @@
-import pool from './db.js'
+/*import pool from './db.js'
 
 export async function crearUsuario(nombre, hashedPassword) {
   const result = await pool.query(
@@ -21,4 +21,4 @@ export async function marcarFan(usuarioId) {
     "update usuario set fan = true where id = $1",
     [usuarioId]
   )
-}
+}*/

@@ -1,4 +1,4 @@
-import pool from './db.js'
+/*import pool from './db.js'
 
 export async function crearCancion(nombre) {
   const result = await pool.query(
@@ -35,4 +35,4 @@ export async function buscarCancion(id) {
     [id]
   )
   return result.rows[0]
-}
+}*/
