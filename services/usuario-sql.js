@@ -1,6 +1,4 @@
-import pkg from 'pg'
-const {Client} = pkg;
-import { config } from "../dbconfig.js";
+
 
 import { Usuario } from '../models/usuario.js';
 
@@ -12,7 +10,8 @@ const getUsuarioById = async (id) => {
  
 };
 
-const createUsuario = async (usuario) => {
+const crearUsuario = async (usuario) => {
+        console.log("usuario a crear", usuario);
         const u = await Usuario.create(usuario);    
         return u;
  
@@ -37,4 +36,4 @@ const createUsuario = async (usuario) => {
     }
 };
 */
-export default { getUsuarioById, createUsuario };
+export default { getUsuarioById, crearUsuario };

@@ -8,4 +8,4 @@ try {
 } catch (error) {
   console.error('No se pudo conectar a la base de datos:', error);
 }
-await sequelize.close();
+//await sequelize.close();

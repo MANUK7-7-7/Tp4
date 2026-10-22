@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import * as usuarioService from '../services/usuario.service.js'
+import usuarioService from '../services/usuario-sql.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secreto123'
 
@@ -11,7 +11,8 @@ export async function crearUsuario(req, res) {
 
   try {
     const hashedPwd = await bcrypt.hash(user.password, 10)
-    const nuevoUsuario = await usuarioService.crearUsuario(user.nombre, hashedPwd)
+    user.password = hashedPwd;
+    const nuevoUsuario = await usuarioService.crearUsuario(user)
     console.log("usuario creado", nuevoUsuario)
     return res.status(201).json({message:"Usuario creado!", usuario: nuevoUsuario})
   }
