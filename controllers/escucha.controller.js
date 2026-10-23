@@ -1,5 +1,6 @@
-import * as escuchaService from '../services/escucha.service.js'
-import * as usuarioService from '../services/usuario.service.js'
+import escuchaService from '../services/escucha-sql.js'
+import usuarioService from '../services/usuario-sql.js'
+import cancionService from '../services/cancion-sql.js'
 
 const REPRODUCCIONES_PARA_FAN = 10
 
@@ -7,6 +8,10 @@ export async function registrarEscucha(req, res) {
   const { id } = req.params
 
   try {
+    const cancion = await cancionService.getCancionById(id)
+    if (!cancion)
+      return res.status(404).json({message:"Canción inexistente"})
+
     const existente = await escuchaService.buscarEscucha(req.user.id, id)
 
     const escucha = existente

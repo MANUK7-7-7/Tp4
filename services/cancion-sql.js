@@ -44,13 +44,22 @@ const postCancion = async (cancion) => {
 }
 
 const putCancion = async (id, nombre) => {
-    const a = await Cancion.update({ 'nombre' :nombre}, { where: { id } });
+    const a = await Cancion.findByPk(id);
+    if (!a) return null;
+    await a.update({ nombre });
     return a;
 };
 
 const deleteCancion = async (id) => {
-    const a = await Cancion.destroy({ where: { id } });
+    const a = await Cancion.findByPk(id);
+    if (!a) return null;
+    await a.destroy();
     return a;
 }
 
-export default { getCanciones, postCancion, putCancion , deleteCancion, escuchoCancion };
+const listarCanciones = async () => {
+    const a = await Cancion.findAll();
+    return a;
+}
+
+export default { getCanciones, getCancionById, postCancion, putCancion , deleteCancion, listarCanciones, escuchoCancion };

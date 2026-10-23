@@ -21,7 +21,7 @@ export function verifyToken(req, res, next) {
 }
 
 export function verifyAdmin(req, res, next) {
-  if (req.user?.rol !== 'A')
+  if (req.user?.admin !== true)
     return res.status(403).json({message:"No tenés permisos de administrador"})
 
   next()

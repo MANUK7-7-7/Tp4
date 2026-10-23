@@ -27,6 +27,10 @@ Usuario.init(
         admin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
+        },
+        fan: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         }
     },
     {

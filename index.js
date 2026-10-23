@@ -16,6 +16,7 @@ const defineModels = async () => {
 
 const app = express();
 app.use(express.json());
+app.use((req, _, next) => { req.body ??= {}; next(); }); // Express 5 deja req.body undefined si no hay body
 app.use(cors());
 
 app.get("/", (_, res) => res.send("SpoTICfy API is running..."));

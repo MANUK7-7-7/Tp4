@@ -4,7 +4,7 @@ import { Usuario } from '../models/usuario.js';
 
 
 const getUsuarioById = async (id) => {
-        const u = Usuario.findByPk(id);
+        const u = await Usuario.findByPk(id);
         if (!u) return null;
         return u;
  
@@ -12,6 +12,10 @@ const getUsuarioById = async (id) => {
 
 const buscarPorNombre = async (nombre) => {
         return await Usuario.findOne({ where: { nombre } });
+};
+
+const marcarFan = async (id) => {
+        await Usuario.update({ fan: true }, { where: { id } });
 };
 
 const crearUsuario = async (usuario) => {
@@ -40,4 +44,4 @@ const createUsuario = async (usuario) => {
     }
 };
 */
-export default { getUsuarioById, crearUsuario, buscarPorNombre };
+export default { getUsuarioById, crearUsuario, buscarPorNombre, marcarFan };

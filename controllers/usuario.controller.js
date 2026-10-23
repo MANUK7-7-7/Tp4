@@ -11,10 +11,14 @@ export async function crearUsuario(req, res) {
 
   try {
     const hashedPwd = await bcrypt.hash(user.password, 10)
-    user.password = hashedPwd;
-    const nuevoUsuario = await usuarioService.crearUsuario(user)
+    const nuevoUsuario = await usuarioService.crearUsuario({
+      userid: user.userid ?? user.nombre,
+      nombre: user.nombre,
+      password: hashedPwd
+    })
     console.log("usuario creado", nuevoUsuario)
-    return res.status(201).json({message:"Usuario creado!", usuario: nuevoUsuario})
+    const { password, ...usuario } = nuevoUsuario.toJSON()
+    return res.status(201).json({message:"Usuario creado!", usuario})
   }
   catch (err) {
     console.log("Error:", err)
@@ -36,7 +40,7 @@ export async function login(req, res) {
     if (!passOK)
       return res.status(400).json({message:"Usuario inexistente o clave incorrecta"})
 
-    const payload = { id: dbUser.id, rol: dbUser.rol }
+    const payload = { id: dbUser.id, admin: dbUser.admin }
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn:'1h'})
     return res.status(200).json({token})
   }

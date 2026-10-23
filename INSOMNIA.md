@@ -22,9 +22,9 @@ Cómo cargar cada endpoint en Insomnia: método, URL, headers y body.
 | POST | `/auth/login` | No | — |
 | GET | `/cancion` | Sí | Cualquier usuario logueado |
 | GET | `/cancion/:id` | Sí | Cualquier usuario logueado |
-| POST | `/cancion` | Sí | Admin (`rol = 'A'`) |
-| PUT | `/cancion/:id` | Sí | Admin (`rol = 'A'`) |
-| DELETE | `/cancion/:id` | Sí | Admin (`rol = 'A'`) |
+| POST | `/cancion` | Sí | Admin (`admin = true`) |
+| PUT | `/cancion/:id` | Sí | Admin (`admin = true`) |
+| DELETE | `/cancion/:id` | Sí | Admin (`admin = true`) |
 | POST | `/cancion/escucho/:id` | Sí | Cualquier usuario logueado |
 | GET | `/cancion/escucho` | Sí | Cualquier usuario logueado |
 
@@ -32,7 +32,7 @@ Cómo cargar cada endpoint en Insomnia: método, URL, headers y body.
 
 ## 1. Crear usuario
 
-Crea un usuario nuevo. La password se guarda hasheada con bcrypt. El usuario se crea con el `rol` por defecto de la base (no se puede elegir desde acá).
+Crea un usuario nuevo. La password se guarda hasheada con bcrypt. El usuario se crea siempre como no admin y no fan (no se puede elegir desde acá). Para hacer admin a un usuario hay que cambiar `admin` a `true` directo en la base.
 
 - **Método:** `POST`
 - **URL:** `http://localhost:3000/auth/crearusuario`
@@ -51,7 +51,7 @@ Crea un usuario nuevo. La password se guarda hasheada con bcrypt. El usuario se 
 ```json
 {
   "message": "Usuario creado!",
-  "usuario": { "id": 1, "nombre": "axel", "rol": "U", "fan": false }
+  "usuario": { "id": 1, "userid": "axel", "nombre": "axel", "admin": false, "fan": false }
 }
 ```
 
@@ -203,11 +203,11 @@ Cuando el usuario llega a 10 reproducciones en total (sumando todas sus cancione
 ```json
 {
   "message": "Escucha registrada!",
-  "escucha": { "usuario_id": 1, "cancion_id": 1, "reproducciones": 1 }
+  "escucha": { "id": 1, "usuarioId": 1, "cancionId": 1, "reproducciones": 1 }
 }
 ```
 
-**Errores:** `401` sin token válido; `500` si falla la base (por ejemplo, si la canción no existe y salta la foreign key).
+**Errores:** `401` sin token válido; `404` si la canción no existe; `500` si falla la base.
 
 ---
 

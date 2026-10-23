@@ -1,4 +1,4 @@
-import * as cancionService from '../services/cancion.service.js'
+import cancionService from '../services/cancion-sql.js'
 
 export async function crearCancion(req, res) {
   const { nombre } = req.body
@@ -6,7 +6,7 @@ export async function crearCancion(req, res) {
     return res.status(400).json({message:"Debes completar todos los campos"})
 
   try {
-    const cancion = await cancionService.crearCancion(nombre)
+    const cancion = await cancionService.postCancion({ nombre })
     return res.status(201).json({message:"Canción creada!", cancion})
   }
   catch (err) {
@@ -22,7 +22,7 @@ export async function modificarCancion(req, res) {
     return res.status(400).json({message:"Debes completar todos los campos"})
 
   try {
-    const cancion = await cancionService.modificarCancion(id, nombre)
+    const cancion = await cancionService.putCancion(id, nombre)
     if (!cancion)
       return res.status(404).json({message:"Canción inexistente"})
 
@@ -38,7 +38,7 @@ export async function borrarCancion(req, res) {
   const { id } = req.params
 
   try {
-    const cancion = await cancionService.borrarCancion(id)
+    const cancion = await cancionService.deleteCancion(id)
     if (!cancion)
       return res.status(404).json({message:"Canción inexistente"})
 
@@ -65,7 +65,7 @@ export async function buscarCancion(req, res) {
   const { id } = req.params
 
   try {
-    const cancion = await cancionService.buscarCancion(id)
+    const cancion = await cancionService.getCancionById(id)
     if (!cancion)
       return res.status(404).json({message:"Canción inexistente"})
 
