@@ -10,6 +10,10 @@ const getUsuarioById = async (id) => {
  
 };
 
+const buscarPorNombre = async (nombre) => {
+        return await Usuario.findOne({ where: { nombre } });
+};
+
 const crearUsuario = async (usuario) => {
         console.log("usuario a crear", usuario);
         const u = await Usuario.create(usuario);    
@@ -36,4 +40,4 @@ const createUsuario = async (usuario) => {
     }
 };
 */
-export default { getUsuarioById, crearUsuario };
+export default { getUsuarioById, crearUsuario, buscarPorNombre };
